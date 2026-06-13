@@ -1,3 +1,5 @@
+"use client";
+
 import { Server, Sparkles, ShieldCheck } from "lucide-react";
 import type { Tool } from "@/lib/tools";
 import { site } from "@/lib/site";

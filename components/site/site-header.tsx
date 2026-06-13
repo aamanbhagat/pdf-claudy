@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { NavigationMenu as NM, Dialog } from "radix-ui";
+import { NavigationMenu as NM } from "radix-ui";
 import { ChevronDown, Menu, X, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { groupedTools, getTool } from "@/lib/tools";
@@ -69,57 +69,95 @@ function DesktopNav() {
   );
 }
 
+/**
+ * Self-contained mobile drawer — intentionally not built on Radix Dialog.
+ * Its scroll-lock / focus-trap layer (react-remove-scroll) has a history of
+ * "won't open" failures on real iOS Safari that headless engines don't repro,
+ * so the critical mobile-nav path uses plain state we fully control.
+ */
 function MobileNav() {
   const [open, setOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    panelRef.current?.focus();
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>
-        <button
-          aria-label="Open menu"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-paper-deep lg:hidden"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-ink/30 backdrop-blur-sm data-[state=open]:animate-[nav-pop-in_200ms] lg:hidden dark:bg-black/60" />
-        <Dialog.Content className="fixed inset-y-0 right-0 z-50 flex w-[min(22rem,92vw)] flex-col bg-paper shadow-lift outline-none lg:hidden">
-          <div className="flex items-center justify-between border-b border-line px-5 py-4">
-            <Logo />
-            <Dialog.Close
-              aria-label="Close menu"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink hover:bg-paper-deep"
-            >
-              <X className="h-5 w-5" />
-            </Dialog.Close>
-          </div>
-          <Dialog.Title className="sr-only">Menu</Dialog.Title>
-          <div className="flex-1 overflow-y-auto px-3 py-4">
-            {groups.map(({ category, tools }) => (
-              <div key={category.id} className="mb-5">
-                <div className="mb-1 flex items-center gap-2 px-2.5">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: category.accent }} />
-                  <h3 className="font-mono text-[0.68rem] font-medium uppercase tracking-[0.12em] text-graphite">
-                    {category.label}
-                  </h3>
+    <>
+      <button
+        type="button"
+        aria-label="Open menu"
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+        className="inline-flex h-10 w-10 touch-manipulation items-center justify-center rounded-full text-ink hover:bg-paper-deep active:bg-line-soft lg:hidden"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+          <button
+            type="button"
+            aria-hidden="true"
+            tabIndex={-1}
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 animate-[fade-in_200ms] bg-ink/30 backdrop-blur-sm dark:bg-black/60"
+          />
+          <div
+            ref={panelRef}
+            tabIndex={-1}
+            className="absolute inset-y-0 right-0 flex w-[min(22rem,92vw)] animate-[drawer-in_240ms_var(--ease-out-soft)] flex-col bg-paper shadow-lift outline-none"
+          >
+            <div className="flex items-center justify-between border-b border-line px-5 py-4">
+              <Logo />
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setOpen(false)}
+                className="inline-flex h-10 w-10 touch-manipulation items-center justify-center rounded-full text-ink hover:bg-paper-deep active:bg-line-soft"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-3 py-4">
+              {groups.map(({ category, tools }) => (
+                <div key={category.id} className="mb-5">
+                  <div className="mb-1 flex items-center gap-2 px-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: category.accent }} />
+                    <h3 className="font-mono text-[0.68rem] font-medium uppercase tracking-[0.12em] text-graphite">
+                      {category.label}
+                    </h3>
+                  </div>
+                  {tools.map((tool) => (
+                    <Link
+                      key={tool.slug}
+                      href={`/${tool.slug}`}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 rounded-lg px-2.5 py-2 hover:bg-paper-deep"
+                    >
+                      <ToolTile tool={tool} size="sm" />
+                      <span className="text-[0.95rem] font-medium text-ink">{tool.name}</span>
+                    </Link>
+                  ))}
                 </div>
-                {tools.map((tool) => (
-                  <Link
-                    key={tool.slug}
-                    href={`/${tool.slug}`}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-lg px-2.5 py-2 hover:bg-paper-deep"
-                  >
-                    <ToolTile tool={tool} size="sm" />
-                    <span className="text-[0.95rem] font-medium text-ink">{tool.name}</span>
-                  </Link>
-                ))}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+        </div>
+      )}
+    </>
   );
 }
 

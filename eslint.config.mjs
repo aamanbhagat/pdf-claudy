@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone Node service (CommonJS) deployed to the VPS — not part of the Next app.
+    "services/**",
   ]),
 ]);
 

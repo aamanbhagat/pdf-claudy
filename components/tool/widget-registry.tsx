@@ -41,4 +41,10 @@ export const widgets: Record<string, ComponentType> = {
   "compare-pdf": named(() => import("@/components/tools/compare-pdf"), "ComparePdfTool"),
   "ocr-pdf": named(() => import("@/components/tools/ocr-pdf"), "OcrPdfTool"),
   "edit-pdf": named(() => import("@/components/tools/edit-pdf"), "EditPdfTool"),
+  // Server tools — proxied to the VPS convert service (one widget, op detected from the path).
+  ...Object.fromEntries(
+    ["word-to-pdf", "powerpoint-to-pdf", "excel-to-pdf", "pdf-to-word", "pdf-to-pdfa", "repair-pdf", "html-to-pdf"].map(
+      (slug) => [slug, named(() => import("@/components/tools/server-convert"), "ServerConvertTool")],
+    ),
+  ),
 };

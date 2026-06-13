@@ -23,9 +23,9 @@ export function SiteFooter() {
             <div className="mt-6 flex flex-wrap gap-x-8 gap-y-4">
               {footerNav.map((col) => (
                 <div key={col.label}>
-                  <h4 className="mb-2 font-mono text-[0.66rem] font-medium uppercase tracking-[0.12em] text-graphite-soft">
+                  <h3 className="mb-2 font-mono text-[0.66rem] font-medium uppercase tracking-[0.12em] text-graphite-soft">
                     {col.label}
-                  </h4>
+                  </h3>
                   <ul className="space-y-1.5">
                     {col.links.map(([label, href]) => (
                       <li key={label}>
@@ -43,10 +43,10 @@ export function SiteFooter() {
           <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
             {groups.map(({ category, tools }) => (
               <nav key={category.id} aria-label={category.label}>
-                <h4 className="mb-2.5 flex items-center gap-2 font-mono text-[0.66rem] font-medium uppercase tracking-[0.12em] text-graphite-soft">
+                <h3 className="mb-2.5 flex items-center gap-2 font-mono text-[0.66rem] font-medium uppercase tracking-[0.12em] text-graphite-soft">
                   <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: category.accent }} />
                   {category.label}
-                </h4>
+                </h3>
                 <ul className="space-y-1.5">
                   {tools.map((tool) => (
                     <li key={tool.slug}>

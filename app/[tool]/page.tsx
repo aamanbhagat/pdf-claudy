@@ -54,9 +54,10 @@ export default async function ToolPage({ params }: { params: Promise<{ tool: str
         <header className="mx-auto mt-8 max-w-2xl text-center">
           <ToolTile tool={tool} size="lg" className="mx-auto" />
           <span
-            className="mt-4 inline-block rounded-full px-3 py-1 text-xs font-medium"
-            style={{ backgroundColor: category.tint, color: category.accent }}
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-ink-soft"
+            style={{ backgroundColor: category.tint }}
           >
+            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: category.accent }} />
             {category.label}
           </span>
           <h1 className="mt-3 text-balance text-4xl font-bold text-ink sm:text-5xl">{tool.name}</h1>

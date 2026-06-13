@@ -1,0 +1,85 @@
+import {
+  Combine,
+  Scissors,
+  FileMinus2,
+  FileOutput,
+  LayoutGrid,
+  ScanLine,
+  Shrink,
+  Wrench,
+  ScanText,
+  Image as ImageIcon,
+  FileType2,
+  Presentation,
+  Table2,
+  Code2,
+  ImageDown,
+  FileType,
+  MonitorPlay,
+  Sheet,
+  Archive,
+  RotateCw,
+  ListOrdered,
+  Stamp,
+  Crop,
+  PenLine,
+  FormInput,
+  Unlock,
+  ShieldCheck,
+  Signature,
+  EyeOff,
+  Columns2,
+  Sparkles,
+  Languages,
+  FileText,
+  type LucideIcon,
+} from "lucide-react";
+
+/** Maps each tool slug to its monoline glyph. */
+const glyphs: Record<string, LucideIcon> = {
+  "merge-pdf": Combine,
+  "split-pdf": Scissors,
+  "remove-pages": FileMinus2,
+  "extract-pages": FileOutput,
+  "organize-pdf": LayoutGrid,
+  "scan-to-pdf": ScanLine,
+  "compress-pdf": Shrink,
+  "repair-pdf": Wrench,
+  "ocr-pdf": ScanText,
+  "jpg-to-pdf": ImageIcon,
+  "word-to-pdf": FileType2,
+  "powerpoint-to-pdf": Presentation,
+  "excel-to-pdf": Table2,
+  "html-to-pdf": Code2,
+  "pdf-to-jpg": ImageDown,
+  "pdf-to-word": FileType,
+  "pdf-to-powerpoint": MonitorPlay,
+  "pdf-to-excel": Sheet,
+  "pdf-to-pdfa": Archive,
+  "rotate-pdf": RotateCw,
+  "add-page-numbers": ListOrdered,
+  "add-watermark": Stamp,
+  "crop-pdf": Crop,
+  "edit-pdf": PenLine,
+  "pdf-forms": FormInput,
+  "unlock-pdf": Unlock,
+  "protect-pdf": ShieldCheck,
+  "sign-pdf": Signature,
+  "redact-pdf": EyeOff,
+  "compare-pdf": Columns2,
+  "ai-summarizer": Sparkles,
+  "translate-pdf": Languages,
+};
+
+export function ToolGlyph({
+  slug,
+  className,
+  strokeWidth = 1.6,
+}: {
+  slug: string;
+  className?: string;
+  strokeWidth?: number;
+}) {
+  const Glyph = glyphs[slug] ?? FileText;
+  return <Glyph className={className} strokeWidth={strokeWidth} aria-hidden />;
+}

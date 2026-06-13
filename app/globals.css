@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Quire design tokens — "the document workbench"
+   Warm paper, ink, a single iris accent, precise hairlines.
+   ============================================================ */
+@theme {
+  /* Surfaces & ink */
+  --color-paper: #fbfaf7;
+  --color-paper-deep: #f4f2ec;
+  --color-surface: #ffffff;
+  --color-ink: #16151d;
+  --color-ink-soft: #2c2a37;
+  --color-graphite: #6b6a78;
+  --color-graphite-soft: #9a98a6;
+  --color-line: #e7e4ee;
+  --color-line-soft: #efedf4;
+
+  /* Accent — iris */
+  --color-iris: #5a48f5;
+  --color-iris-strong: #4636d6;
+  --color-iris-tint: #ece9fe;
+
+  /* Type */
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-hanken), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Radii */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+
+  /* Shadows — soft, paper-like */
+  --shadow-soft: 0 1px 2px rgba(22, 21, 29, 0.04), 0 4px 16px rgba(22, 21, 29, 0.05);
+  --shadow-lift: 0 2px 6px rgba(22, 21, 29, 0.06), 0 14px 40px rgba(22, 21, 29, 0.1);
+  --shadow-iris: 0 8px 24px rgba(90, 72, 245, 0.28);
+
+  /* Easing */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Animations */
+  --animate-marquee: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Paper texture: a barely-there warm grain behind everything. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(22, 21, 29, 0.022) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+
+  ::selection {
+    background-color: var(--color-iris);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-iris);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Mega-menu (Radix NavigationMenu) — directly-positioned panels */
+.nav-panel {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nav-panel[data-state="open"] { animation: nav-pop-in 220ms var(--ease-out-soft); }
+.nav-panel[data-state="closed"] { animation: nav-pop-out 160ms ease forwards; }
+@keyframes nav-pop-in { from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.98); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+@keyframes nav-pop-out { from { opacity: 1; } to { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.98); } }
+
+/* Accordion (Radix) motion */
+.acc-content { overflow: hidden; }
+.acc-content[data-state="open"] { animation: acc-down 260ms var(--ease-out-soft); }
+.acc-content[data-state="closed"] { animation: acc-up 200ms var(--ease-out-soft); }
+@keyframes acc-down { from { height: 0; } to { height: var(--radix-accordion-content-height); } }
+@keyframes acc-up { from { height: var(--radix-accordion-content-height); } to { height: 0; } }
+
+@layer utilities {
+  /* Page gutter used by the header, footer and section wrappers. */
+  .wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .wrap { padding-inline: 2rem; }
+  }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  /* Hairline border that reads as precise, not heavy. */
+  .hairline { border: 1px solid var(--color-line); }
+}

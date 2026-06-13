@@ -1,7 +1,17 @@
 import { categories, categoryMap, type Category, type CategoryId } from "./categories";
-import { tools, type Tool, type Engine } from "./registry";
+import { tools as rawTools, type Tool, type Engine } from "./registry";
+import { toolContent } from "./content";
 
-export { categories, categoryMap, tools };
+// Enrich every tool with HowTo + FAQ content. A registry entry's own howto/faqs
+// take precedence; otherwise we fill from the content module so each tool page
+// ships real, unique, indexable content (HowTo + FAQPage rich results).
+export const tools: Tool[] = rawTools.map((t) => ({
+  ...t,
+  howto: t.howto ?? toolContent[t.slug]?.howto,
+  faqs: t.faqs ?? toolContent[t.slug]?.faqs,
+}));
+
+export { categories, categoryMap };
 export type { Category, CategoryId, Tool, Engine };
 
 const bySlug = new Map(tools.map((t) => [t.slug, t]));

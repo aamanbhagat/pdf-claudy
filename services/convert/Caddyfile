@@ -1,0 +1,9 @@
+# Caddy reverse proxy for the convert service — automatic HTTPS via Let's Encrypt.
+# Deployed to /etc/caddy/Caddyfile on the VPS. The sslip.io hostname resolves
+# 104-214-176-55.sslip.io -> 104.214.176.55, so no domain purchase is needed.
+#
+# Requires inbound TCP 80 (ACME HTTP-01 challenge + redirect) and 443 (HTTPS).
+104-214-176-55.sslip.io {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8090
+}

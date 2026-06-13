@@ -36,9 +36,23 @@ curl -s localhost:8090/health
 
 Open the port in the firewall: `sudo ufw allow 8090/tcp`.
 
+## TLS (Caddy + sslip.io)
+
+Caddy fronts the service with automatic HTTPS. `Caddyfile` is deployed to
+`/etc/caddy/Caddyfile`; it terminates TLS for `104-214-176-55.sslip.io`
+(sslip.io maps the dashed IP to the host, so no domain is needed) and reverse
+proxies to the container on `127.0.0.1:8090`. Needs inbound TCP **80 + 443**.
+
+```bash
+sudo cp Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
+curl https://104-214-176-55.sslip.io/health
+```
+
+`CONVERT_SERVICE_URL` should be `https://104-214-176-55.sslip.io`. Once that's in
+use everywhere, the public `8090` port can be closed and the container rebound to
+`127.0.0.1` (so only Caddy can reach it).
+
 ## Notes / follow-ups
 
-- Transport between the Next.js server and this service is currently plain HTTP
-  protected by a bearer token + firewall. Add a domain + TLS (Caddy/Let's Encrypt)
-  to encrypt it and to allow large direct uploads that bypass Vercel's request limit.
-- `pdf-to-excel` is genuinely hard; LibreOffice output is rough — treat as best-effort.
+- Vercel caps a serverless request body at ~4.5 MB; very large uploads would need
+  a direct browser→VPS upload path (now possible since the VPS has real TLS).

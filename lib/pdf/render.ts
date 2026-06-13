@@ -37,8 +37,8 @@ export interface ThumbInfo {
   height: number;
 }
 
-/** Small page previews for grid UIs (organize, crop, etc.). */
-export async function renderThumbnails(buffer: ArrayBuffer, targetWidth = 200): Promise<ThumbInfo[]> {
+/** Page previews for grid/editor UIs (organize, crop, compare, etc.). */
+export async function renderThumbnails(buffer: ArrayBuffer, targetWidth = 200, quality = 0.7): Promise<ThumbInfo[]> {
   const task = open(buffer);
   const doc = await task.promise;
   const thumbs: ThumbInfo[] = [];
@@ -51,7 +51,7 @@ export async function renderThumbnails(buffer: ArrayBuffer, targetWidth = 200): 
     canvas.height = Math.ceil(viewport.height);
     const ctx = canvas.getContext("2d")!;
     await page.render({ canvas, canvasContext: ctx, viewport }).promise;
-    thumbs.push({ index: i - 1, url: canvas.toDataURL("image/jpeg", 0.7), width: canvas.width, height: canvas.height });
+    thumbs.push({ index: i - 1, url: canvas.toDataURL("image/jpeg", quality), width: canvas.width, height: canvas.height });
     page.cleanup();
   }
   task.destroy();

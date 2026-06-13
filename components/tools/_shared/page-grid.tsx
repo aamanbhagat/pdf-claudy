@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { renderThumbnails, type ThumbInfo } from "@/lib/pdf/render";
 import { cn } from "@/lib/utils";
 
-export function usePageThumbs(file: File | undefined) {
+export function usePageThumbs(file: File | undefined, targetWidth = 220, quality = 0.7) {
   const [thumbs, setThumbs] = useState<ThumbInfo[] | null>(null);
   useEffect(() => {
     if (!file) return;
@@ -13,13 +13,13 @@ export function usePageThumbs(file: File | undefined) {
     setThumbs(null);
     file
       .arrayBuffer()
-      .then((b) => renderThumbnails(b, 220))
+      .then((b) => renderThumbnails(b, targetWidth, quality))
       .then((t) => alive && setThumbs(t))
       .catch(() => alive && setThumbs([]));
     return () => {
       alive = false;
     };
-  }, [file]);
+  }, [file, targetWidth, quality]);
   return thumbs;
 }
 

@@ -20,8 +20,11 @@ export function ComparePdfTool() {
   const [page, setPage] = useState(0);
   const [diff, setDiff] = useState(false);
   const overlay = useRef<HTMLCanvasElement>(null);
-  const thumbsA = usePageThumbs(a ?? undefined);
-  const thumbsB = usePageThumbs(b ?? undefined);
+  // Render at high resolution — these pages are shown near full column width, not as small grid thumbnails.
+  const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+  const renderWidth = Math.round(900 * dpr);
+  const thumbsA = usePageThumbs(a ?? undefined, renderWidth, 0.92);
+  const thumbsB = usePageThumbs(b ?? undefined, renderWidth, 0.92);
   const both = a && b;
   const ca = thumbsA?.[page];
   const cb = thumbsB?.[page];

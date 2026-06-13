@@ -5,7 +5,7 @@ import { Eraser, Download, RotateCcw, CheckCircle2, Loader2, ChevronLeft, Chevro
 import { Button } from "@/components/ui/button";
 import { Dropzone } from "./_shared/dropzone";
 import { Segmented, Slider, TextInput } from "./_shared/controls";
-import { usePageThumbs } from "./_shared/page-grid";
+import { usePageImage, usePageCount } from "./_shared/page-grid";
 import { pdf } from "@/lib/pdf/client";
 import { pdfBlob } from "@/lib/pdf/types";
 import { downloadBlob } from "@/lib/pdf/download";
@@ -68,8 +68,10 @@ export function SignPdfTool() {
   const [widthFrac, setWidthFrac] = useState(0.28);
   const [result, setResult] = useState<Blob | null>(null);
   const padRef = useRef<HTMLCanvasElement>(null);
-  const thumbs = usePageThumbs(phase === "editor" ? (file ?? undefined) : undefined);
-  const current = thumbs?.[pageIndex];
+  const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+  const editorFile = phase === "editor" ? (file ?? undefined) : undefined;
+  const current = usePageImage(editorFile, pageIndex, Math.round(540 * dpr), 0.92);
+  const total = usePageCount(editorFile);
 
   const reset = () => {
     setFile(null);
@@ -172,11 +174,11 @@ export function SignPdfTool() {
         ) : (
           <div className="grid aspect-[3/4] place-items-center rounded-xl border border-line bg-paper-deep"><Loader2 className="h-5 w-5 animate-spin text-graphite" /></div>
         )}
-        {thumbs && thumbs.length > 1 && (
+        {total && total > 1 && (
           <div className="flex items-center justify-center gap-3 text-sm">
             <button onClick={() => setPageIndex((i) => Math.max(0, i - 1))} disabled={pageIndex === 0} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronLeft className="h-4 w-4" /></button>
-            <span className="font-mono text-graphite">Page {pageIndex + 1} / {thumbs.length}</span>
-            <button onClick={() => setPageIndex((i) => Math.min(thumbs.length - 1, i + 1))} disabled={pageIndex === thumbs.length - 1} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
+            <span className="font-mono text-graphite">Page {pageIndex + 1} / {total}</span>
+            <button onClick={() => setPageIndex((i) => Math.min(total - 1, i + 1))} disabled={pageIndex === total - 1} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
           </div>
         )}
         <div className="flex items-center justify-between">

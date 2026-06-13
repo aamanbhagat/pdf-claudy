@@ -58,6 +58,32 @@ export async function renderThumbnails(buffer: ArrayBuffer, targetWidth = 200, q
   return thumbs;
 }
 
+export interface PageImage {
+  url: string;
+  width: number;
+  height: number;
+  total: number;
+}
+
+/** Render a single page at high resolution, for editors that show one page at a time. */
+export async function renderPage(buffer: ArrayBuffer, pageIndex: number, targetWidth: number, quality = 0.9): Promise<PageImage> {
+  const task = open(buffer);
+  const doc = await task.promise;
+  const total = doc.numPages;
+  const page = await doc.getPage(pageIndex + 1);
+  const base = page.getViewport({ scale: 1 });
+  const viewport = page.getViewport({ scale: targetWidth / base.width });
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+  const ctx = canvas.getContext("2d")!;
+  await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+  const url = canvas.toDataURL("image/jpeg", quality);
+  page.cleanup();
+  task.destroy();
+  return { url, width: canvas.width, height: canvas.height, total };
+}
+
 /** Render each page to a JPEG, returning the bytes plus the page size in PDF points. */
 export async function rasterize(
   buffer: ArrayBuffer,

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
-import { renderThumbnails, type ThumbInfo } from "@/lib/pdf/render";
+import { renderThumbnails, renderPage, pageCount, type ThumbInfo, type PageImage } from "@/lib/pdf/render";
 import { cn } from "@/lib/utils";
 
-export function usePageThumbs(file: File | undefined, targetWidth = 220, quality = 0.7) {
+export function usePageThumbs(file: File | undefined, targetWidth = 420, quality = 0.78) {
   const [thumbs, setThumbs] = useState<ThumbInfo[] | null>(null);
   useEffect(() => {
     if (!file) return;
@@ -21,6 +21,44 @@ export function usePageThumbs(file: File | undefined, targetWidth = 220, quality
     };
   }, [file, targetWidth, quality]);
   return thumbs;
+}
+
+/** Total page count, independent of any single-page render (stays available while pages change). */
+export function usePageCount(file: File | undefined) {
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    if (!file) return;
+    let alive = true;
+    setCount(null);
+    file
+      .arrayBuffer()
+      .then((b) => pageCount(b))
+      .then((n) => alive && setCount(n))
+      .catch(() => alive && setCount(null));
+    return () => {
+      alive = false;
+    };
+  }, [file]);
+  return count;
+}
+
+/** High-resolution render of one page, for editors that show one page at a time (redact, edit, sign, crop). */
+export function usePageImage(file: File | undefined, pageIndex: number, targetWidth = 1000, quality = 0.9) {
+  const [image, setImage] = useState<PageImage | null>(null);
+  useEffect(() => {
+    if (!file) return;
+    let alive = true;
+    setImage(null);
+    file
+      .arrayBuffer()
+      .then((b) => renderPage(b, pageIndex, targetWidth, quality))
+      .then((img) => alive && setImage(img))
+      .catch(() => alive && setImage(null));
+    return () => {
+      alive = false;
+    };
+  }, [file, pageIndex, targetWidth, quality]);
+  return image;
 }
 
 function Skeleton() {

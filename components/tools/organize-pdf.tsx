@@ -32,7 +32,7 @@ export function OrganizePdfTool() {
     setPhase("working");
     file
       .arrayBuffer()
-      .then((b) => renderThumbnails(b, 220))
+      .then((b) => renderThumbnails(b, 420, 0.78))
       .then((t) => {
         if (!alive) return;
         setPages(t.map((p) => ({ key: `p${p.index}`, src: p.index, rotation: 0, url: p.url })));

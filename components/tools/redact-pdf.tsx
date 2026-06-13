@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Undo2, Download, RotateCcw, CheckCircle2, Loader2, ChevronLeft, ChevronRight, Eraser } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dropzone } from "./_shared/dropzone";
-import { usePageThumbs } from "./_shared/page-grid";
+import { usePageImage, usePageCount } from "./_shared/page-grid";
 import { pdf } from "@/lib/pdf/client";
 import { pdfBlob } from "@/lib/pdf/types";
 import { downloadBlob } from "@/lib/pdf/download";
@@ -20,8 +20,10 @@ export function RedactPdfTool() {
   const [draft, setDraft] = useState<Rect | null>(null);
   const start = useRef<{ x: number; y: number } | null>(null);
   const [result, setResult] = useState<Blob | null>(null);
-  const thumbs = usePageThumbs(phase === "editor" ? (file ?? undefined) : undefined);
-  const current = thumbs?.[pageIndex];
+  const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+  const editorFile = phase === "editor" ? (file ?? undefined) : undefined;
+  const current = usePageImage(editorFile, pageIndex, Math.round(480 * dpr), 0.92);
+  const total = usePageCount(editorFile);
   const pageBoxes = boxes[pageIndex] ?? [];
 
   const reset = () => { setFile(null); setPhase("select"); setBoxes({}); setResult(null); setPageIndex(0); };
@@ -85,11 +87,11 @@ export function RedactPdfTool() {
       <div className="flex items-center justify-center gap-2">
         <button onClick={() => setBoxes((b) => ({ ...b, [pageIndex]: (b[pageIndex] ?? []).slice(0, -1) }))} disabled={!pageBoxes.length} className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm text-ink-soft disabled:opacity-40"><Undo2 className="h-3.5 w-3.5" /> Undo</button>
         <button onClick={() => setBoxes((b) => ({ ...b, [pageIndex]: [] }))} disabled={!pageBoxes.length} className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm text-ink-soft disabled:opacity-40"><Eraser className="h-3.5 w-3.5" /> Clear page</button>
-        {thumbs && thumbs.length > 1 && (
+        {total && total > 1 && (
           <div className="ml-2 flex items-center gap-2 text-sm">
             <button onClick={() => setPageIndex((i) => Math.max(0, i - 1))} disabled={pageIndex === 0} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronLeft className="h-4 w-4" /></button>
-            <span className="font-mono text-graphite">{pageIndex + 1} / {thumbs.length}</span>
-            <button onClick={() => setPageIndex((i) => Math.min(thumbs.length - 1, i + 1))} disabled={pageIndex === thumbs.length - 1} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
+            <span className="font-mono text-graphite">{pageIndex + 1} / {total}</span>
+            <button onClick={() => setPageIndex((i) => Math.min(total - 1, i + 1))} disabled={pageIndex === total - 1} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
           </div>
         )}
       </div>

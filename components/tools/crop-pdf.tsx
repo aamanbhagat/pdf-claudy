@@ -1,7 +1,7 @@
 "use client";
 
 import { ToolShell } from "./_shared/tool-shell";
-import { usePageThumbs } from "./_shared/page-grid";
+import { usePageImage } from "./_shared/page-grid";
 import { Slider } from "./_shared/controls";
 import { pdf } from "@/lib/pdf/client";
 import { pdfBlob } from "@/lib/pdf/types";
@@ -14,8 +14,8 @@ interface Opts {
 }
 
 function CropOptions({ file, value, set }: { file: File; value: Opts; set: (p: Partial<Opts>) => void }) {
-  const thumbs = usePageThumbs(file);
-  const first = thumbs?.[0];
+  const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+  const first = usePageImage(file, 0, Math.round(400 * dpr), 0.9);
   return (
     <div className="grid gap-6 sm:grid-cols-[minmax(0,200px)_1fr] sm:items-start">
       <div className="mx-auto w-full max-w-[200px]">

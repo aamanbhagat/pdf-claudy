@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dropzone } from "./_shared/dropzone";
 import { Slider, ColorPicker } from "./_shared/controls";
-import { usePageThumbs } from "./_shared/page-grid";
+import { usePageImage, usePageCount } from "./_shared/page-grid";
 import { pdf } from "@/lib/pdf/client";
 import { pdfBlob } from "@/lib/pdf/types";
 import { downloadBlob } from "@/lib/pdf/download";
@@ -66,8 +66,10 @@ export function EditPdfTool() {
   const canvasRef = useRef<HTMLDivElement>(null);
   const size = usePreviewSize(canvasRef);
   const imageInput = useRef<HTMLInputElement>(null);
-  const thumbs = usePageThumbs(phase === "editor" ? (file ?? undefined) : undefined);
-  const current = thumbs?.[pageIndex];
+  const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
+  const editorFile = phase === "editor" ? (file ?? undefined) : undefined;
+  const current = usePageImage(editorFile, pageIndex, Math.round(540 * dpr), 0.92);
+  const total = usePageCount(editorFile);
   const selected = els.find((e) => e.id === sel) ?? null;
   const pageEls = els.filter((e) => e.page === pageIndex);
   const drag = useRef<{ id: string; ox: number; oy: number } | null>(null);
@@ -200,11 +202,11 @@ export function EditPdfTool() {
               </div>
             ))}
           </div>
-          {thumbs && thumbs.length > 1 && (
+          {total && total > 1 && (
             <div className="mt-3 flex items-center justify-center gap-3 text-sm">
               <button onClick={() => setPageIndex((i) => Math.max(0, i - 1))} disabled={pageIndex === 0} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronLeft className="h-4 w-4" /></button>
-              <span className="font-mono text-graphite">Page {pageIndex + 1} / {thumbs.length}</span>
-              <button onClick={() => setPageIndex((i) => Math.min(thumbs.length - 1, i + 1))} disabled={pageIndex === thumbs.length - 1} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
+              <span className="font-mono text-graphite">Page {pageIndex + 1} / {total}</span>
+              <button onClick={() => setPageIndex((i) => Math.min(total - 1, i + 1))} disabled={pageIndex === total - 1} className="grid h-8 w-8 place-items-center rounded-full border border-line disabled:opacity-30"><ChevronRight className="h-4 w-4" /></button>
             </div>
           )}
         </div>

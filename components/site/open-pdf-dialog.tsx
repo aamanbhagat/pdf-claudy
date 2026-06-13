@@ -104,7 +104,7 @@ export default function OpenPdfDialog({ file, onClose }: { file: File; onClose: 
 function Chooser({ file, onView, onLaunch }: { file: File; onView: () => void; onLaunch: (slug: string) => void }) {
   const preview = usePageImage(file, 0, 440, 0.82);
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto" data-lenis-prevent>
       <div className="mx-auto grid max-w-5xl gap-7 p-5 sm:p-8 lg:grid-cols-[300px_1fr]">
         <div className="lg:sticky lg:top-0 lg:self-start">
           <div className="overflow-hidden rounded-xl border border-line bg-white shadow-soft">
@@ -186,7 +186,7 @@ function Viewer({ file, total }: { file: File; total: number | null }) {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex-1 overflow-auto bg-paper-deep p-4 sm:p-8">
+      <div className="flex-1 overflow-auto bg-paper-deep p-4 sm:p-8" data-lenis-prevent>
         <div className="mx-auto transition-[max-width] duration-200" style={{ maxWidth: `${820 * zoom}px` }}>
           {page ? (
             // eslint-disable-next-line @next/next/no-img-element

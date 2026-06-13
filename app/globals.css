@@ -166,6 +166,13 @@
 /* Mobile nav drawer — slides in from the right. */
 @keyframes drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
+/* Lenis smooth scroll (homepage). Nested scrollers opt out with data-lenis-prevent. */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: clip; }
+
 /* Accordion (Radix) motion */
 .acc-content { overflow: hidden; }
 .acc-content[data-state="open"] { animation: acc-down 260ms var(--ease-out-soft); }

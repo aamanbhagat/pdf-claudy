@@ -131,7 +131,7 @@ function MobileNav() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto px-3 py-4">
+            <div className="flex-1 overflow-y-auto px-3 py-4" data-lenis-prevent>
               {groups.map(({ category, tools }) => (
                 <div key={category.id} className="mb-5">
                   <div className="mb-1 flex items-center gap-2 px-2.5">

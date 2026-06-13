@@ -57,10 +57,11 @@ export function ToolsExplorer() {
       <motion.div
         key={active}
         initial="hidden"
-        animate="show"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.1 }}
         variants={{
           hidden: {},
-          show: { transition: { staggerChildren: reduce ? 0 : 0.025 } },
+          show: { transition: { staggerChildren: reduce ? 0 : 0.03, delayChildren: 0.05 } },
         }}
         className="mt-8 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >

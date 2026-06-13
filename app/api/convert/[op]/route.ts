@@ -10,6 +10,8 @@ const OPS = new Set([
   "powerpoint-to-pdf",
   "excel-to-pdf",
   "pdf-to-word",
+  "pdf-to-powerpoint",
+  "pdf-to-excel",
   "pdf-to-pdfa",
   "repair-pdf",
   "html-to-pdf",

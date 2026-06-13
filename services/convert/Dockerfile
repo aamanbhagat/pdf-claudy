@@ -25,13 +25,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 
-# pdf2docx: real PDF -> Word reconstruction (LibreOffice can't export PDF to docx).
-RUN pip3 install --no-cache-dir --break-system-packages pdf2docx
+# Python converters LibreOffice can't do: pdf2docx (-> Word),
+# python-pptx + PyMuPDF (-> PowerPoint), pdfplumber + openpyxl (-> Excel).
+RUN pip3 install --no-cache-dir --break-system-packages \
+      pdf2docx \
+      python-pptx \
+      pdfplumber \
+      openpyxl
 
 WORKDIR /app
 COPY package.json ./
 RUN npm install --omit=dev && npm cache clean --force
-COPY server.js ./
+COPY server.js pdf_to_pptx.py pdf_to_xlsx.py ./
 
 EXPOSE 8090
 CMD ["node", "server.js"]

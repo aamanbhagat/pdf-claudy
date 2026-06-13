@@ -114,7 +114,18 @@ const OPS = {
     });
     return { outPath: out, ext: "docx" };
   },
-  // pdf-to-powerpoint and pdf-to-excel: no reliable engine here yet (deferred).
+  // PDF -> PPTX: one slide per page, rendered as an image (PyMuPDF + python-pptx).
+  "pdf-to-powerpoint": async (dir, input) => {
+    const out = path.join(dir, "out.pptx");
+    await run("python3", ["/app/pdf_to_pptx.py", input, out], { env: { ...process.env, HOME: dir } });
+    return { outPath: out, ext: "pptx" };
+  },
+  // PDF -> XLSX: extract tables (pdfplumber), fall back to text lines (openpyxl).
+  "pdf-to-excel": async (dir, input) => {
+    const out = path.join(dir, "out.xlsx");
+    await run("python3", ["/app/pdf_to_xlsx.py", input, out], { env: { ...process.env, HOME: dir } });
+    return { outPath: out, ext: "xlsx" };
+  },
 
   "pdf-to-pdfa": async (dir, input) => {
     const out = path.join(dir, "out.pdf");

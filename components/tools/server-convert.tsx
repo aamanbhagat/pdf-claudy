@@ -17,6 +17,8 @@ const CONFIG: Record<string, { accept: string; out: string; allowUrl?: boolean }
   "powerpoint-to-pdf": { accept: ".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation", out: "pdf" },
   "excel-to-pdf": { accept: ".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", out: "pdf" },
   "pdf-to-word": { accept: "application/pdf", out: "docx" },
+  "pdf-to-powerpoint": { accept: "application/pdf", out: "pptx" },
+  "pdf-to-excel": { accept: "application/pdf", out: "xlsx" },
   "pdf-to-pdfa": { accept: "application/pdf", out: "pdf" },
   "repair-pdf": { accept: "application/pdf", out: "pdf" },
   "html-to-pdf": { accept: ".html,.htm,text/html", out: "pdf", allowUrl: true },

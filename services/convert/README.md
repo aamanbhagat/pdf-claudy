@@ -10,14 +10,11 @@ never called directly by the browser, and the bearer token stays server-side).
 | --- | --- |
 | `word-to-pdf`, `powerpoint-to-pdf`, `excel-to-pdf` | LibreOffice headless |
 | `pdf-to-word` | pdf2docx (LibreOffice can't export a PDF to docx) |
+| `pdf-to-powerpoint` | PyMuPDF render + python-pptx (one image slide per page) |
+| `pdf-to-excel` | pdfplumber table extraction + openpyxl (text-line fallback) |
 | `pdf-to-pdfa` | Ghostscript |
 | `repair-pdf` | qpdf, with a Ghostscript rewrite fallback |
 | `html-to-pdf` | Chromium headless (`--print-to-pdf`) |
-
-`pdf-to-powerpoint` and `pdf-to-excel` are intentionally **not** implemented here —
-LibreOffice opens a PDF as a Draw document with no clean export path to those
-formats. They stay as "coming soon" until a dedicated tool is added (per-slide
-image rendering for PPTX, table extraction for XLSX).
 
 ## API
 

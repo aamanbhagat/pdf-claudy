@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, RotateCcw, Loader2, ArrowRight, Gauge, ScanLine } from "lucide-react";
+import { Download, RotateCcw, Loader2, ArrowRight, Minimize2, FileText } from "lucide-react";
 import { cn, formatBytes } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dropzone } from "./_shared/dropzone";
@@ -10,23 +10,24 @@ import { pdf } from "@/lib/pdf/client";
 import { pdfBlob } from "@/lib/pdf/types";
 import { downloadBlob } from "@/lib/pdf/download";
 
-type Mode = "recommended" | "strong";
+type Mode = "smaller" | "lossless";
 type Phase = "select" | "working" | "done";
 
 interface Result {
   blob: Blob;
   before: number;
   after: number;
+  rasterized: boolean;
 }
 
-const modes: { id: Mode; label: string; desc: string; Icon: typeof Gauge }[] = [
-  { id: "recommended", label: "Recommended", desc: "Keeps text sharp and selectable. Best for everyday PDFs.", Icon: Gauge },
-  { id: "strong", label: "Strong (scans)", desc: "Re-renders pages as images. Big savings for scanned documents.", Icon: ScanLine },
+const modes: { id: Mode; label: string; desc: string; Icon: typeof Minimize2 }[] = [
+  { id: "smaller", label: "Smaller file", desc: "Shrinks images for a much smaller file. Best for scans, photos and large PDFs.", Icon: Minimize2 },
+  { id: "lossless", label: "Keep text crisp", desc: "Lossless — removes hidden waste and keeps everything selectable.", Icon: FileText },
 ];
 
 export function CompressPdfTool() {
   const [file, setFile] = useState<File | null>(null);
-  const [mode, setMode] = useState<Mode>("recommended");
+  const [mode, setMode] = useState<Mode>("smaller");
   const [phase, setPhase] = useState<Phase>("select");
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState("");
@@ -39,21 +40,28 @@ export function CompressPdfTool() {
     setError("");
     try {
       const buf = await file.arrayBuffer();
-      let bytes: Uint8Array;
-      if (mode === "strong") {
+      const orig = file.size;
+      let best: { blob: Blob; size: number; rasterized: boolean } = {
+        blob: new Blob([buf], { type: "application/pdf" }),
+        size: orig,
+        rasterized: false,
+      };
+      const consider = (bytes: Uint8Array, rasterized: boolean) => {
+        const blob = pdfBlob(bytes);
+        if (blob.size < best.size) best = { blob, size: blob.size, rasterized };
+      };
+
+      if (mode === "smaller") {
+        // Downsample pages to images — the only reliable way to shrink image-heavy PDFs in the browser.
         const pages = await rasterize(buf, { scale: 1.5, quality: 0.6 });
-        bytes = await pdf().imagesToSizedPdf(pages);
+        consider(await pdf().imagesToSizedPdf(pages), true);
+        // For text/vector PDFs rasterizing can be bigger — fall back to lossless so we never bloat.
+        if (best.size >= orig) consider(await pdf().compress(buf), false);
       } else {
-        bytes = await pdf().compress(buf);
+        consider(await pdf().compress(buf), false);
       }
-      const compressed = pdfBlob(bytes);
-      // Never hand back something larger than the original.
-      const useOriginal = compressed.size >= file.size;
-      setResult({
-        blob: useOriginal ? new Blob([buf], { type: "application/pdf" }) : compressed,
-        before: file.size,
-        after: useOriginal ? file.size : compressed.size,
-      });
+
+      setResult({ blob: best.blob, before: orig, after: best.size, rasterized: best.rasterized });
       setPhase("done");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't compress this PDF.");
@@ -73,7 +81,7 @@ export function CompressPdfTool() {
           <>
             <h2 className="text-xl font-semibold text-ink">This PDF is already well optimized</h2>
             <p className="mx-auto mt-2 max-w-md text-sm text-graphite">
-              We couldn&apos;t shrink it meaningfully without hurting quality. {mode === "recommended" && "For scanned documents, try the Strong (scans) mode."}
+              There&apos;s little to remove without hurting quality — its text and images are already compressed.
             </p>
           </>
         ) : (
@@ -84,6 +92,9 @@ export function CompressPdfTool() {
               <ArrowRight className="h-4 w-4 text-iris" />
               <span>{formatBytes(result.after)}</span>
             </div>
+            {result.rasterized && (
+              <p className="mx-auto mt-2 max-w-md text-xs text-graphite">Pages were re-rendered, so text is now part of the image.</p>
+            )}
           </>
         )}
         <div className="mx-auto mt-6 max-w-md">

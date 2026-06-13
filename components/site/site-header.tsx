@@ -10,7 +10,7 @@ import { site } from "@/lib/site";
 import { Logo } from "@/components/icons/logo";
 import { ToolTile } from "@/components/ui/tool-tile";
 import { MegaPanel } from "@/components/site/mega-panel";
-import { buttonVariants } from "@/components/ui/button";
+import { OpenPdfButton } from "@/components/site/open-pdf";
 
 const groups = groupedTools();
 const convertGroups = groups.filter((g) => g.category.id === "convert-to" || g.category.id === "convert-from");
@@ -153,9 +153,7 @@ export function SiteHeader() {
           >
             <Search className="h-[1.15rem] w-[1.15rem]" strokeWidth={1.8} />
           </Link>
-          <Link href="/merge-pdf" className={cn(buttonVariants({ variant: "accent", size: "sm" }), "hidden sm:inline-flex")}>
-            Open a PDF
-          </Link>
+          <OpenPdfButton className="hidden sm:inline-flex" />
           <MobileNav />
         </div>
       </div>

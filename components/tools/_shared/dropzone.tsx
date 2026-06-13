@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { claimStagedFiles } from "@/lib/handoff";
 
 export function Dropzone({
   accept,
@@ -23,6 +24,14 @@ export function Dropzone({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
+
+  // Consume a file handed off from the "Open a PDF" launcher, if one is waiting.
+  useEffect(() => {
+    const staged = claimStagedFiles(accept, multiple);
+    if (staged) onFiles(staged);
+    // run once on mount — claimStagedFiles clears the store after the first read
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const pick = (list: FileList | null) => {
     if (!list) return;

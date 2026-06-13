@@ -119,6 +119,16 @@
 @keyframes nav-pop-in { from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.98); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 @keyframes nav-pop-out { from { opacity: 1; } to { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.98); } }
 
+/* Open-a-PDF overlay (Radix Dialog) */
+.pdf-overlay[data-state="open"] { animation: fade-in 200ms ease; }
+.pdf-overlay[data-state="closed"] { animation: fade-out 160ms ease forwards; }
+.pdf-panel[data-state="open"] { animation: dialog-pop-in 240ms var(--ease-out-soft); }
+.pdf-panel[data-state="closed"] { animation: dialog-pop-out 160ms ease forwards; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes dialog-pop-in { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes dialog-pop-out { from { opacity: 1; } to { opacity: 0; transform: scale(0.99); } }
+
 /* Accordion (Radix) motion */
 .acc-content { overflow: hidden; }
 .acc-content[data-state="open"] { animation: acc-down 260ms var(--ease-out-soft); }

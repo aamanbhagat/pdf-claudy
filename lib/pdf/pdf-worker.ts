@@ -240,6 +240,51 @@ const api = {
     return out(await doc.save({ useObjectStreams: false }));
   },
 
+  /** Flatten editor elements (text / rect / highlight / image) onto pages. */
+  async editApply(
+    buffer: ArrayBuffer,
+    opts: {
+      elements: {
+        page: number;
+        type: "text" | "rect" | "highlight" | "image";
+        xFrac: number;
+        yFrac: number;
+        wFrac: number;
+        hFrac: number;
+        sizeFrac?: number;
+        text?: string;
+        color?: [number, number, number];
+        image?: { bytes: ArrayBuffer; type: string };
+      }[];
+    },
+  ) {
+    const doc = await load(buffer);
+    const font = await doc.embedFont(StandardFonts.Helvetica);
+    for (const el of opts.elements) {
+      const page = doc.getPage(Math.min(el.page, doc.getPageCount() - 1));
+      const { width: W, height: H } = page.getSize();
+      const color = el.color ?? [0.09, 0.08, 0.11];
+      if (el.type === "text" && el.text) {
+        const size = (el.sizeFrac ?? 0.03) * H;
+        page.drawText(el.text, { x: el.xFrac * W, y: (1 - el.yFrac) * H - size, size, font, color: rgb(...color) });
+      } else if (el.type === "image" && el.image) {
+        const img = el.image.type.includes("png") ? await doc.embedPng(el.image.bytes) : await doc.embedJpg(el.image.bytes);
+        page.drawImage(img, { x: el.xFrac * W, y: (1 - el.yFrac - el.hFrac) * H, width: el.wFrac * W, height: el.hFrac * H });
+      } else if (el.type === "rect" || el.type === "highlight") {
+        const hl = el.type === "highlight";
+        page.drawRectangle({
+          x: el.xFrac * W,
+          y: (1 - el.yFrac - el.hFrac) * H,
+          width: el.wFrac * W,
+          height: el.hFrac * H,
+          color: rgb(...(hl ? ([1, 0.86, 0.2] as [number, number, number]) : color)),
+          opacity: hl ? 0.4 : 1,
+        });
+      }
+    }
+    return out(await doc.save());
+  },
+
   /** Stamp an image onto one page, centered at fractional coords (yFrac from top). */
   async stampImage(
     buffer: ArrayBuffer,

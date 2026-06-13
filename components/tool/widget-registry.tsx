@@ -40,4 +40,5 @@ export const widgets: Record<string, ComponentType> = {
   "redact-pdf": named(() => import("@/components/tools/redact-pdf"), "RedactPdfTool"),
   "compare-pdf": named(() => import("@/components/tools/compare-pdf"), "ComparePdfTool"),
   "ocr-pdf": named(() => import("@/components/tools/ocr-pdf"), "OcrPdfTool"),
+  "edit-pdf": named(() => import("@/components/tools/edit-pdf"), "EditPdfTool"),
 };

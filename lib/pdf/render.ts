@@ -22,6 +22,22 @@ function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number):
   );
 }
 
+/** Pull the selectable text out of a PDF (for AI tools), capped at `maxChars`. */
+export async function extractText(buffer: ArrayBuffer, maxChars = 48000): Promise<string> {
+  const task = open(buffer);
+  const doc = await task.promise;
+  let out = "";
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    out += content.items.map((it) => ("str" in it ? it.str : "")).join(" ") + "\n\n";
+    page.cleanup();
+    if (out.length >= maxChars) break;
+  }
+  task.destroy();
+  return out.slice(0, maxChars).trim();
+}
+
 export async function pageCount(buffer: ArrayBuffer): Promise<number> {
   const task = open(buffer);
   const doc = await task.promise;

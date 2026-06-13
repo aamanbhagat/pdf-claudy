@@ -47,4 +47,8 @@ export const widgets: Record<string, ComponentType> = {
       (slug) => [slug, named(() => import("@/components/tools/server-convert"), "ServerConvertTool")],
     ),
   ),
+  // AI tools — DeepSeek-backed (one widget, op detected from the path).
+  ...Object.fromEntries(
+    ["ai-summarizer", "translate-pdf"].map((slug) => [slug, named(() => import("@/components/tools/ai-tool"), "AiTool")]),
+  ),
 };

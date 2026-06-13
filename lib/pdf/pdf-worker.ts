@@ -216,6 +216,21 @@ const api = {
     return out(await doc.save());
   },
 
+  /** Real lossless-ish compression via MuPDF: re-deflate streams, recompress images/fonts, GC. */
+  async compress(buffer: ArrayBuffer) {
+    const mupdf = await import("mupdf");
+    const doc = mupdf.Document.openDocument(new Uint8Array(buffer), "application/pdf").asPDF();
+    if (!doc) throw new Error("This file doesn't look like a valid PDF.");
+    try {
+      const buf = doc.saveToBuffer("compress=yes,compress-images=yes,compress-fonts=yes,garbage=compact");
+      const bytes = new Uint8Array(buf.asUint8Array());
+      buf.destroy();
+      return out(bytes);
+    } finally {
+      doc.destroy();
+    }
+  },
+
   /** Rebuild a PDF from one JPEG per page at the given point sizes (used by Compress). */
   async imagesToSizedPdf(pages: { bytes: ArrayBuffer; w: number; h: number }[]) {
     const doc = await PDFDocument.create();

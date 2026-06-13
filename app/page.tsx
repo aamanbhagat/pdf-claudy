@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck, Gauge, Layers, MousePointerClick, FileUp, Download } from "lucide-react";
 import { Hero } from "@/components/home/hero";
+import { IntroScroll } from "@/components/home/intro-scroll";
 import { ToolsExplorer } from "@/components/home/tools-explorer";
 import { buttonVariants } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -35,6 +36,7 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={homeJsonLd()} />
+      <IntroScroll />
       <Hero />
       <ToolsExplorer />
 

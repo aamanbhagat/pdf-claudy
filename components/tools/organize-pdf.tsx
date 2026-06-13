@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { RotateCw, Trash2, Loader2, Download, RotateCcw, CheckCircle2, GripVertical } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { RotateCw, Trash2, Loader2, Download, RotateCcw, CheckCircle2, Move } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dropzone } from "./_shared/dropzone";
@@ -22,7 +22,8 @@ export function OrganizePdfTool() {
   const [file, setFile] = useState<File | null>(null);
   const [pages, setPages] = useState<Page[]>([]);
   const [phase, setPhase] = useState<Phase>("select");
-  const [drag, setDrag] = useState<number | null>(null);
+  const dragKey = useRef<string | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
   const [result, setResult] = useState<{ name: string; blob: Blob } | null>(null);
 
   useEffect(() => {
@@ -51,15 +52,33 @@ export function OrganizePdfTool() {
   const rotate = (key: string) => setPages((p) => p.map((x) => (x.key === key ? { ...x, rotation: (x.rotation + 90) % 360 } : x)));
   const remove = (key: string) => setPages((p) => p.filter((x) => x.key !== key));
 
-  const onDrop = (to: number) => {
-    if (drag === null || drag === to) return;
+  // Pointer-based reorder: grab anywhere on a page, works with mouse + touch.
+  const moveOver = (overKey: string) => {
+    if (!dragKey.current || dragKey.current === overKey) return;
     setPages((p) => {
+      const from = p.findIndex((x) => x.key === dragKey.current);
+      const to = p.findIndex((x) => x.key === overKey);
+      if (from < 0 || to < 0 || from === to) return p;
       const next = [...p];
-      const [moved] = next.splice(drag, 1);
+      const [moved] = next.splice(from, 1);
       next.splice(to, 0, moved);
       return next;
     });
-    setDrag(null);
+  };
+  const startDrag = (e: React.PointerEvent, key: string) => {
+    dragKey.current = key;
+    setDragging(key);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragKey.current) return;
+    const tile = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest("[data-pk]");
+    const key = tile?.getAttribute("data-pk");
+    if (key) moveOver(key);
+  };
+  const endDrag = () => {
+    dragKey.current = null;
+    setDragging(null);
   };
 
   async function apply() {
@@ -103,18 +122,19 @@ export function OrganizePdfTool() {
         </div>
       ) : (
         <>
-          <p className="text-sm text-graphite">Drag to reorder. Hover a page to rotate or delete it.</p>
+          <p className="text-sm text-graphite">Drag any page to reorder it. Hover a page to rotate or delete it.</p>
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
             {pages.map((page, i) => (
               <div
                 key={page.key}
-                draggable
-                onDragStart={() => setDrag(i)}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => onDrop(i)}
+                data-pk={page.key}
+                onPointerDown={(e) => startDrag(e, page.key)}
+                onPointerMove={onPointerMove}
+                onPointerUp={endDrag}
+                onPointerCancel={endDrag}
                 className={cn(
-                  "group relative cursor-grab overflow-hidden rounded-lg border border-line bg-white active:cursor-grabbing",
-                  drag === i && "opacity-40",
+                  "group relative touch-none cursor-grab select-none overflow-hidden rounded-lg border bg-white transition-transform active:cursor-grabbing",
+                  dragging === page.key ? "z-10 scale-[0.97] border-iris opacity-80 shadow-lift" : "border-line hover:border-iris/40",
                 )}
               >
                 <div className="flex aspect-[3/4] items-center justify-center overflow-hidden">
@@ -122,18 +142,19 @@ export function OrganizePdfTool() {
                   <img
                     src={page.url}
                     alt={`Page ${page.src + 1}`}
-                    className="max-h-full max-w-full transition-transform duration-200"
+                    draggable={false}
+                    className="pointer-events-none max-h-full max-w-full transition-transform duration-200"
                     style={{ transform: `rotate(${page.rotation}deg)` }}
                   />
                 </div>
                 <span className="absolute left-1 top-1 flex items-center gap-0.5 rounded bg-ink/70 px-1 py-0.5 font-mono text-[0.6rem] text-white">
-                  <GripVertical className="h-2.5 w-2.5" /> {i + 1}
+                  <Move className="h-2.5 w-2.5" /> {i + 1}
                 </span>
                 <div className="absolute inset-x-0 bottom-0 flex justify-center gap-1 bg-gradient-to-t from-ink/70 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button onClick={() => rotate(page.key)} aria-label="Rotate page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink hover:bg-iris hover:text-white">
+                  <button onPointerDown={(e) => e.stopPropagation()} onClick={() => rotate(page.key)} aria-label="Rotate page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink hover:bg-iris hover:text-white">
                     <RotateCw className="h-3.5 w-3.5" />
                   </button>
-                  <button onClick={() => remove(page.key)} aria-label="Delete page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink hover:bg-[#E5484D] hover:text-white">
+                  <button onPointerDown={(e) => e.stopPropagation()} onClick={() => remove(page.key)} aria-label="Delete page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink hover:bg-[#E5484D] hover:text-white">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>

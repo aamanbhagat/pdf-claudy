@@ -147,14 +147,14 @@ export function OrganizePdfTool() {
                     style={{ transform: `rotate(${page.rotation}deg)` }}
                   />
                 </div>
-                <span className="absolute left-1 top-1 flex items-center gap-0.5 rounded bg-ink/70 px-1 py-0.5 font-mono text-[0.6rem] text-white">
+                <span className="absolute left-1 top-1 flex items-center gap-0.5 rounded bg-[#16151d]/70 px-1 py-0.5 font-mono text-[0.6rem] text-white">
                   <Move className="h-2.5 w-2.5" /> {i + 1}
                 </span>
-                <div className="absolute inset-x-0 bottom-0 flex justify-center gap-1 bg-gradient-to-t from-ink/70 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button onPointerDown={(e) => e.stopPropagation()} onClick={() => rotate(page.key)} aria-label="Rotate page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink hover:bg-iris hover:text-white">
+                <div className="absolute inset-x-0 bottom-0 flex justify-center gap-1 bg-gradient-to-t from-black/60 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+                  <button onPointerDown={(e) => e.stopPropagation()} onClick={() => rotate(page.key)} aria-label="Rotate page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-[#16151d] hover:bg-iris hover:text-white">
                     <RotateCw className="h-3.5 w-3.5" />
                   </button>
-                  <button onPointerDown={(e) => e.stopPropagation()} onClick={() => remove(page.key)} aria-label="Delete page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-ink hover:bg-[#E5484D] hover:text-white">
+                  <button onPointerDown={(e) => e.stopPropagation()} onClick={() => remove(page.key)} aria-label="Delete page" className="grid h-7 w-7 place-items-center rounded-full bg-white text-[#16151d] hover:bg-[#E5484D] hover:text-white">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>

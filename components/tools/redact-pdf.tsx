@@ -77,7 +77,7 @@ export function RedactPdfTool() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={current.url} alt={`Page ${pageIndex + 1}`} className="block w-full" draggable={false} />
           {[...pageBoxes, ...(draft ? [draft] : [])].map((b, i) => (
-            <span key={i} className="pointer-events-none absolute bg-ink" style={{ left: `${b.x * 100}%`, top: `${b.y * 100}%`, width: `${b.w * 100}%`, height: `${b.h * 100}%` }} />
+            <span key={i} className="pointer-events-none absolute bg-[#16151d]" style={{ left: `${b.x * 100}%`, top: `${b.y * 100}%`, width: `${b.w * 100}%`, height: `${b.h * 100}%` }} />
           ))}
         </div>
       ) : (

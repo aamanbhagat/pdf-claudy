@@ -100,7 +100,7 @@ export function PageGrid({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={t.url} alt={`Page ${t.index + 1}`} className="block w-full" />
-            <span className="absolute left-1 top-1 rounded bg-ink/70 px-1.5 py-0.5 font-mono text-[0.6rem] text-white">
+            <span className="absolute left-1 top-1 rounded bg-[#16151d]/70 px-1.5 py-0.5 font-mono text-[0.6rem] text-white">
               {t.index + 1}
             </span>
             {sel && (

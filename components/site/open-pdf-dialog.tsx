@@ -52,7 +52,7 @@ export default function OpenPdfDialog({ file, onClose }: { file: File; onClose: 
 
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="pdf-overlay fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm" />
+      <Dialog.Overlay className="pdf-overlay fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm dark:bg-black/70" />
       <Dialog.Content className="pdf-panel fixed inset-0 z-50 flex flex-col overflow-hidden bg-paper outline-none sm:inset-4 sm:rounded-2xl sm:border sm:border-line sm:shadow-lift">
         <div className="flex items-center gap-3 border-b border-line px-4 py-3 sm:px-5">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-iris-tint text-iris">

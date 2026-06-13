@@ -92,14 +92,14 @@ export default function HomePage() {
 
       {/* Final CTA */}
       <section className="wrap py-16">
-        <div className="relative overflow-hidden rounded-3xl bg-ink px-8 py-14 text-center sm:px-16">
+        <div className="relative overflow-hidden rounded-3xl bg-ink px-8 py-14 text-center sm:px-16 dark:bg-[#1b1a23] dark:ring-1 dark:ring-white/10">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-60"
             style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(90,72,245,0.35), transparent 70%)" }}
           />
           <div className="relative">
-            <h2 className="text-balance text-3xl font-bold text-paper sm:text-[2.6rem]">
+            <h2 className="text-balance text-3xl font-bold text-[#FBFAF7] sm:text-[2.6rem]">
               Start with the tool you need.
             </h2>
             <p className="mx-auto mt-3 max-w-md text-pretty text-graphite-soft">
@@ -111,7 +111,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/merge-pdf"
-                className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-7 text-base font-medium text-paper transition-colors hover:bg-white/10"
+                className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-7 text-base font-medium text-[#FBFAF7] transition-colors hover:bg-white/10"
               >
                 Merge a PDF
               </Link>

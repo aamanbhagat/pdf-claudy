@@ -94,10 +94,10 @@ export function ScanToPdfTool() {
 
   return (
     <div className="space-y-5">
-      <div className="relative overflow-hidden rounded-2xl border border-line bg-ink">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-[#16151d]">
         <video ref={videoRef} autoPlay playsInline muted className="aspect-video w-full object-cover" />
         {phase === "working" && (
-          <div className="absolute inset-0 grid place-items-center bg-ink/60 text-paper">
+          <div className="absolute inset-0 grid place-items-center bg-black/60 text-white">
             <span className="flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" /> Building PDF…</span>
           </div>
         )}
@@ -105,7 +105,7 @@ export function ScanToPdfTool() {
           onClick={capture}
           disabled={phase === "working"}
           aria-label="Capture page"
-          className="absolute bottom-4 left-1/2 grid h-14 w-14 -translate-x-1/2 place-items-center rounded-full bg-white text-ink shadow-lift ring-4 ring-white/40 transition-transform hover:scale-105"
+          className="absolute bottom-4 left-1/2 grid h-14 w-14 -translate-x-1/2 place-items-center rounded-full bg-white text-[#16151d] shadow-lift ring-4 ring-white/40 transition-transform hover:scale-105"
         >
           <Camera className="h-6 w-6" />
         </button>
@@ -117,7 +117,7 @@ export function ScanToPdfTool() {
             <div key={i} className="relative h-20 w-16 overflow-hidden rounded-lg border border-line">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt={`Capture ${i + 1}`} className="h-full w-full object-cover" />
-              <button onClick={() => setShots((s) => s.filter((_, idx) => idx !== i))} aria-label="Remove" className="absolute right-0.5 top-0.5 grid h-5 w-5 place-items-center rounded-full bg-ink/70 text-white">
+              <button onClick={() => setShots((s) => s.filter((_, idx) => idx !== i))} aria-label="Remove" className="absolute right-0.5 top-0.5 grid h-5 w-5 place-items-center rounded-full bg-[#16151d]/70 text-white">
                 <X className="h-3 w-3" />
               </button>
             </div>

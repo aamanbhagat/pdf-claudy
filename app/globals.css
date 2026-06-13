@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: `dark:` utilities apply under <html class="dark">. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ============================================================
    Quire design tokens — "the document workbench"
    Warm paper, ink, a single iris accent, precise hairlines.
@@ -46,6 +49,33 @@
   --animate-marquee: marquee 40s linear infinite;
 }
 
+/* ============================================================
+   Dark theme — same warm-ink language, inverted: deep near-black
+   paper, lifted surfaces, a brighter iris. Flipping these tokens
+   re-themes every component built on the semantic palette.
+   ============================================================ */
+:root.dark {
+  color-scheme: dark;
+
+  --color-paper: #131217;
+  --color-paper-deep: #232029;
+  --color-surface: #1b1a21;
+  --color-ink: #f3f1f7;
+  --color-ink-soft: #d6d3df;
+  --color-graphite: #a3a0b0;
+  --color-graphite-soft: #8b8895;
+  --color-line: #2d2b36;
+  --color-line-soft: #25232d;
+
+  --color-iris: #7c6cf9;
+  --color-iris-strong: #9181fb;
+  --color-iris-tint: #241f3d;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.45), 0 14px 40px rgba(0, 0, 0, 0.6);
+  --shadow-iris: 0 8px 24px rgba(124, 108, 249, 0.4);
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -78,6 +108,10 @@
     pointer-events: none;
     background-image: radial-gradient(rgba(22, 21, 29, 0.022) 1px, transparent 1px);
     background-size: 4px 4px;
+  }
+  /* On dark paper, light specks instead of dark ones. */
+  :root.dark body::before {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   }
 
   ::selection {

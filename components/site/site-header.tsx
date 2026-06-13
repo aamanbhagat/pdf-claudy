@@ -11,6 +11,7 @@ import { Logo } from "@/components/icons/logo";
 import { ToolTile } from "@/components/ui/tool-tile";
 import { MegaPanel } from "@/components/site/mega-panel";
 import { OpenPdfButton } from "@/components/site/open-pdf";
+import { ThemeToggle } from "@/components/site/theme-toggle";
 
 const groups = groupedTools();
 const convertGroups = groups.filter((g) => g.category.id === "convert-to" || g.category.id === "convert-from");
@@ -81,7 +82,7 @@ function MobileNav() {
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-ink/30 backdrop-blur-sm data-[state=open]:animate-[nav-pop-in_200ms] lg:hidden" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-ink/30 backdrop-blur-sm data-[state=open]:animate-[nav-pop-in_200ms] lg:hidden dark:bg-black/60" />
         <Dialog.Content className="fixed inset-y-0 right-0 z-50 flex w-[min(22rem,92vw)] flex-col bg-paper shadow-lift outline-none lg:hidden">
           <div className="flex items-center justify-between border-b border-line px-5 py-4">
             <Logo />
@@ -153,6 +154,7 @@ export function SiteHeader() {
           >
             <Search className="h-[1.15rem] w-[1.15rem]" strokeWidth={1.8} />
           </Link>
+          <ThemeToggle />
           <OpenPdfButton className="hidden sm:inline-flex" />
           <MobileNav />
         </div>

@@ -234,6 +234,31 @@ const api = {
     return out(await doc.save({ useObjectStreams: false }));
   },
 
+  /** Lossless unlock: strip permission/owner encryption by re-saving (no password needed). */
+  async unlock(buffer: ArrayBuffer) {
+    const doc = await SecureDoc.load(buffer, { ignoreEncryption: true });
+    return out(await doc.save({ useObjectStreams: false }));
+  },
+
+  /** Stamp an image onto one page, centered at fractional coords (yFrac from top). */
+  async stampImage(
+    buffer: ArrayBuffer,
+    opts: { image: { bytes: ArrayBuffer; type: string }; pageIndex: number; xFrac: number; yFrac: number; widthFrac: number },
+  ) {
+    const doc = await load(buffer);
+    const img = opts.image.type.includes("png") ? await doc.embedPng(opts.image.bytes) : await doc.embedJpg(opts.image.bytes);
+    const page = doc.getPage(Math.min(opts.pageIndex, doc.getPageCount() - 1));
+    const { width, height } = page.getSize();
+    const dims = img.scale((width * opts.widthFrac) / img.width);
+    page.drawImage(img, {
+      x: opts.xFrac * width - dims.width / 2,
+      y: (1 - opts.yFrac) * height - dims.height / 2,
+      width: dims.width,
+      height: dims.height,
+    });
+    return out(await doc.save());
+  },
+
   async listFormFields(buffer: ArrayBuffer): Promise<FormField[]> {
     const doc = await load(buffer);
     return doc.getForm().getFields().map((f): FormField => {

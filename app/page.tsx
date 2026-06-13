@@ -5,6 +5,7 @@ import { ToolsExplorer } from "@/components/home/tools-explorer";
 import { buttonVariants } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
 import { homeJsonLd } from "@/lib/seo/json-ld";
+import { site } from "@/lib/site";
 
 const why = [
   {
@@ -41,7 +42,7 @@ export default function HomePage() {
       <section id="privacy" className="wrap scroll-mt-24 py-12">
         <div className="rounded-3xl border border-line bg-surface p-8 sm:p-12">
           <div className="max-w-2xl">
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris">Why Quire</p>
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-iris">Why {site.name}</p>
             <h2 className="mt-3 text-balance text-3xl font-bold text-ink sm:text-4xl">
               Powerful where it counts. Private by default.
             </h2>
@@ -69,7 +70,7 @@ export default function HomePage() {
               Three steps. No account, no friction.
             </h2>
             <p className="mt-3 text-pretty text-graphite">
-              Quire is built to get out of your way. Open a tool and you&apos;re working in seconds.
+              {site.name} is built to get out of your way. Open a tool and you&apos;re working in seconds.
             </p>
           </div>
           <ol className="grid gap-4 sm:grid-cols-3">

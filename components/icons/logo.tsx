@@ -2,10 +2,10 @@ import { cn } from "@/lib/utils";
 import { site } from "@/lib/site";
 
 /**
- * Quire mark: a folded sheet with a binding spine — the bookbinder's "quire".
+ * Brand mark: a folded sheet with a binding spine.
  * Ink outline, iris spine + folded corner.
  */
-export function QuireMark({ className }: { className?: string }) {
+export function BrandMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 28 28" fill="none" className={className} aria-hidden>
       <path
@@ -40,7 +40,7 @@ export function Logo({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <QuireMark className={cn("h-7 w-7", markClassName)} />
+      <BrandMark className={cn("h-7 w-7", markClassName)} />
       {showWordmark && (
         <span className="font-display text-[1.35rem] font-bold leading-none tracking-tight text-ink">
           {site.name}

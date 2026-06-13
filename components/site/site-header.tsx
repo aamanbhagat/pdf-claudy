@@ -6,6 +6,7 @@ import { NavigationMenu as NM, Dialog } from "radix-ui";
 import { ChevronDown, Menu, X, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { groupedTools, getTool } from "@/lib/tools";
+import { site } from "@/lib/site";
 import { Logo } from "@/components/icons/logo";
 import { ToolTile } from "@/components/ui/tool-tile";
 import { MegaPanel } from "@/components/site/mega-panel";
@@ -138,7 +139,7 @@ export function SiteHeader() {
       )}
     >
       <div className="wrap flex h-16 items-center justify-between gap-4">
-        <Link href="/" aria-label="Quire home" className="shrink-0">
+        <Link href="/" aria-label={`${site.name} home`} className="shrink-0">
           <Logo />
         </Link>
 

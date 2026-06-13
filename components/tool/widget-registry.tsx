@@ -31,4 +31,7 @@ export const widgets: Record<string, ComponentType> = {
   "crop-pdf": named(() => import("@/components/tools/crop-pdf"), "CropPdfTool"),
   "jpg-to-pdf": named(() => import("@/components/tools/jpg-to-pdf"), "JpgToPdfTool"),
   "pdf-to-jpg": named(() => import("@/components/tools/pdf-to-jpg"), "PdfToJpgTool"),
+  "compress-pdf": named(() => import("@/components/tools/compress-pdf"), "CompressPdfTool"),
+  "protect-pdf": named(() => import("@/components/tools/protect-pdf"), "ProtectPdfTool"),
+  "pdf-forms": named(() => import("@/components/tools/pdf-forms"), "PdfFormsTool"),
 };

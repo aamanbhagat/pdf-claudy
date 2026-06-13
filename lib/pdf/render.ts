@@ -58,6 +58,33 @@ export async function renderThumbnails(buffer: ArrayBuffer, targetWidth = 200): 
   return thumbs;
 }
 
+/** Render each page to a JPEG, returning the bytes plus the page size in PDF points. */
+export async function rasterize(
+  buffer: ArrayBuffer,
+  opts: { scale: number; quality: number },
+): Promise<{ bytes: ArrayBuffer; w: number; h: number }[]> {
+  const task = open(buffer);
+  const doc = await task.promise;
+  const pages: { bytes: ArrayBuffer; w: number; h: number }[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const pt = page.getViewport({ scale: 1 });
+    const viewport = page.getViewport({ scale: opts.scale });
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+    const blob = await canvasToBlob(canvas, "image/jpeg", opts.quality);
+    pages.push({ bytes: await blob.arrayBuffer(), w: pt.width, h: pt.height });
+    page.cleanup();
+  }
+  task.destroy();
+  return pages;
+}
+
 /** Render every page to an image file. */
 export async function renderPages(
   buffer: ArrayBuffer,

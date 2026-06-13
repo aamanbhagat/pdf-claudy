@@ -81,14 +81,16 @@ export function TextInput({
   value,
   onChange,
   placeholder,
+  type = "text",
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
+  type?: "text" | "password";
 }) {
   return (
     <input
-      type="text"
+      type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}

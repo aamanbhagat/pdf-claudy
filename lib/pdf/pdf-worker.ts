@@ -1,6 +1,25 @@
 /// <reference lib="webworker" />
 import * as Comlink from "comlink";
-import { PDFDocument, degrees, rgb, StandardFonts, type PDFFont, type PDFPage } from "pdf-lib";
+import {
+  PDFDocument,
+  degrees,
+  rgb,
+  StandardFonts,
+  PDFTextField,
+  PDFCheckBox,
+  PDFDropdown,
+  PDFRadioGroup,
+  PDFOptionList,
+  type PDFFont,
+  type PDFPage,
+} from "pdf-lib";
+import { PDFDocument as SecureDoc } from "@cantoo/pdf-lib";
+
+export interface FormField {
+  name: string;
+  type: "text" | "checkbox" | "dropdown" | "radio" | "optionlist" | "unknown";
+  options?: string[];
+}
 
 const load = (buf: ArrayBuffer) => PDFDocument.load(buf, { ignoreEncryption: true });
 const out = (bytes: Uint8Array) => Comlink.transfer(bytes, [bytes.buffer]);
@@ -194,6 +213,51 @@ const api = {
       const h = img.height * scale;
       page.drawImage(img, { x: (pw - w) / 2, y: (ph - h) / 2, width: w, height: h });
     }
+    return out(await doc.save());
+  },
+
+  /** Rebuild a PDF from one JPEG per page at the given point sizes (used by Compress). */
+  async imagesToSizedPdf(pages: { bytes: ArrayBuffer; w: number; h: number }[]) {
+    const doc = await PDFDocument.create();
+    for (const pg of pages) {
+      const img = await doc.embedJpg(pg.bytes);
+      const page = doc.addPage([pg.w, pg.h]);
+      page.drawImage(img, { x: 0, y: 0, width: pg.w, height: pg.h });
+    }
+    return out(await doc.save());
+  },
+
+  /** Encrypt with a password (AES). Lossless — via @cantoo/pdf-lib. */
+  async protect(buffer: ArrayBuffer, opts: { password: string }) {
+    const doc = await SecureDoc.load(buffer, { ignoreEncryption: true });
+    doc.encrypt({ userPassword: opts.password, ownerPassword: opts.password });
+    return out(await doc.save({ useObjectStreams: false }));
+  },
+
+  async listFormFields(buffer: ArrayBuffer): Promise<FormField[]> {
+    const doc = await load(buffer);
+    return doc.getForm().getFields().map((f): FormField => {
+      const name = f.getName();
+      if (f instanceof PDFTextField) return { name, type: "text" };
+      if (f instanceof PDFCheckBox) return { name, type: "checkbox" };
+      if (f instanceof PDFDropdown) return { name, type: "dropdown", options: f.getOptions() };
+      if (f instanceof PDFRadioGroup) return { name, type: "radio", options: f.getOptions() };
+      if (f instanceof PDFOptionList) return { name, type: "optionlist", options: f.getOptions() };
+      return { name, type: "unknown" };
+    });
+  },
+
+  async fillForm(buffer: ArrayBuffer, opts: { values: Record<string, string | boolean>; flatten: boolean }) {
+    const doc = await load(buffer);
+    const form = doc.getForm();
+    for (const [name, value] of Object.entries(opts.values)) {
+      const field = form.getFields().find((f) => f.getName() === name);
+      if (!field) continue;
+      if (field instanceof PDFTextField) field.setText(String(value));
+      else if (field instanceof PDFCheckBox) value ? field.check() : field.uncheck();
+      else if ((field instanceof PDFDropdown || field instanceof PDFRadioGroup) && value) field.select(String(value));
+    }
+    if (opts.flatten) form.flatten();
     return out(await doc.save());
   },
 };
